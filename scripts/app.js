@@ -1,39 +1,31 @@
-//@ts-check
-/** @type {HTMLCanvasElement} */
-//@ts-ignore
-const canvas = document.getElementById("game-canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = 800;
-canvas.height = 600;
+// @ts-nocheck
+import { canvas, ctx } from "./canvas.js";
+import { level1 } from "./levels.js";
+import { Game } from "./game-objects/game.js";
+// /** @type {HTMLCanvasElement} */
+// //@ts-ignore
+// const canvas = document.getElementById("game-canvas");
+// const ctx = canvas.getContext("2d");
+// canvas.width = 800;
+// canvas.height = 600;
 
-class Player {
-	constructor() {
-		this.width = 32;
-		this.height = 32;
-		this.x = canvas.width / 2 - this.width / 2;
-		this.y = canvas.height / 2 - this.height / 2;
-		this.wireUpEvents();
-	}
-	wireUpEvents() {
-		window.addEventListener("keydown", (e) => {});
-	}
-	update() {}
-	render() {
-		ctx.save();
-		ctx.fillStyle = "green";
-		ctx.fillRect(this.x, this.y, this.width, this.height);
-		ctx.restore();
-	}
-}
+let game = new Game();
+let { player, monsters, barriers, keys } = game.loadLevel(level1);
+let gameObjects = [player, ...monsters, ...barriers, ...keys];
+let currentTime = 0;
 
-let player = new Player();
+console.log(gameObjects);
 
-function gameLoop() {
+function gameLoop(timestamp) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	player.update();
-	player.render();
+	let elapsedTime = Math.floor(timestamp - currentTime);
+	currentTime = timestamp;
+	gameObjects.forEach((o) => {
+		o.update(elapsedTime);
+		o.render();
+	});
 
-	requestAnimationFrame(gameLoop);
+	if (game.isDead) requestAnimationFrame(gameLoop);
 }
 
 requestAnimationFrame(gameLoop);
