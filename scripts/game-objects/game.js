@@ -6,33 +6,93 @@ import { Monster } from "./monster.js";
 import { Player } from "./player.js";
 import { Door } from "./door.js";
 import { ExitPortal } from "../exit-portal.js";
+import { StartScene } from "../scenes/start.js";
+import { GameOverScene } from "../scenes/game-over.js";
+import { GameWonScene } from "../scenes/game-won.js";
+import { AudioPlayer } from "../scenes/audio-player.js";
+import {level1}  from "levels"
 export class Game {
 	constructor() {
 		this.player = undefined;
 		this.barriers = [];
 		this.monsters = [];
 		this.keys = [];
+		this.exitPortal = undefined;
+		this.gameObjects = [];
+
 		this.isDead = false;
+		this.isLevelComplete = false;
+
+		this.levels = [level1, level2];
+		this.currentLevel = 0;
+
+		this.currentTime = 0;
+
+		this.audioPlayer = new AudioPlayer();
 	}
+	init() {
+		let start = new StartScene(this);
+		this.gameObjects.push(start);
+		requestAnimationFrame(gameLoop);
+	}
+	reset() {
+		this.resetGame();
+		this.start();
+	}
+	start() {
+		this.audioPlayer.init();
+		this.audioPlayer.playMusic();
+		this.currentLevel = 0;
+		this.loadLevel();
+	}
+	gameOver() {
+		this.reset();
+		this.audioPlayer.loseDead();
+		let gameOver = new GameOverScene(this);
+		this.gameObjects.push(gameOver);
+	}
+
+	winGame() {
+		this.reset();
+		this.audioPlayer.winGame();
+		let winGame = new GameWonScene(this);
+		this.gameObjects = [win];
+	}
+	nextLevel() {
+		this.resetGame();
+		this.currentLEvel++;
+		if (this.currentLevel < this.levels.length) {
+			this.audioPlayer.exit();
+			this.loadLevel();
+		} else {
+			this.gameOverWin();
+		}
+	}
+
 	/**
 	 * @param {string []} level
 	 */
-	loadLevel(level) {
+	loadLevel() {
+		let level = this.levels[this.currentLevel];
+
 		let monsterCoords = [];
 		let playerCoords = { x: 0, y: 0 };
 
-		level.forEach((row, rIdx) => {
+		level.forEach((row, idx) => {
 			for (let col = 0; col < row.length; col++) {
 				let x = col * 16;
-				let y = rIdx * 16;
+				let y = idx * 16;
+
 				switch (row[col]) {
 					case "w":
 						this.barriers.push(new Barrier(x, y, 16, 16));
 						break;
 					case "m":
+						// set x and y properties for monster
 						monsterCoords.push({ x: x, y: y });
 						break;
 					case "p":
+						// set x and y coordinates for player
 						playerCoords = { x: x, y: y };
 						break;
 					case "k":
@@ -45,22 +105,47 @@ export class Game {
 						this.barriers.push(new Door(x, y, false));
 						break;
 					case "x":
-						this.barriers.push(new ExitPortal(x, y));
+						this.exitPortal = new ExitPortal(x, y, this);
 						break;
 				}
 			}
 		});
+
 		monsterCoords.forEach((c) => {
-			console.log(c);
 			this.monsters.push(new Monster(this, c.x, c.y));
 		});
+
 		this.player = new Player(this, playerCoords.x, playerCoords.y);
 
-		return {
-			player: this.player,
-			monsters: this.monsters,
-			barriers: this.barriers,
-			keys: this.keys,
-		};
+		this.gameObjects = [
+			game.player,
+			...game.monsters,
+			...game.barriers,
+			...game.keys,
+			game.exitPortal,
+		];
 	}
+}
+
+export let game = new Game();
+
+function gameLoop(timestamp) {
+	// console.log(this);
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	if (game.isLevelComplete) {
+		game.nextLevel();
+	}
+	if (game.isPlayerDead) {
+		game.gameOverLose();
+	}
+
+	let elapsedTime = Math.floor(timestamp - game.currentTime);
+	game.currentTime = timestamp;
+
+	game.gameObjects.forEach((o) => {
+		o.update(elapsedTime);
+		o.render();
+	});
+
+	requestAnimationFrame(gameLoop);
 }

@@ -6,7 +6,7 @@ export class GameObject {
 		this.y = y;
 		this.width = w;
 		this.height = h;
-		this.fillStyle = "grey";
+		this.fillStyle = undefined;
 		this.lastLocation = new Location(this.x, this.y);
 		console.log(this);
 	}

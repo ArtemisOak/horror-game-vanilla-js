@@ -82,6 +82,7 @@ export class Player extends GameObject {
 				if (b.isOpen) return;
 				let safeLocation = this.isColliding(b);
 				if (safeLocation && b.isLocked && this.inventory.length) {
+					this.game.audioPlayer.doorOpen();
 					this.inventory.pop();
 					b.isLocked = false;
 					b.isOpen = true;
@@ -98,6 +99,7 @@ export class Player extends GameObject {
 				.filter((k) => !k.isPickedUp)
 				.forEach((k) => {
 					if (this.isColliding(k)) {
+						this.game.audioPlayer.pickupKey();
 						this.inventory.push(k);
 						k.isPickedUp = true;
 					}
