@@ -94,17 +94,18 @@ export class Player extends GameObject {
 					this.y = safeLocation.y;
 				}
 			});
-
-			this.game.keys
-				.filter((k) => !k.isPickedUp)
-				.forEach((k) => {
-					if (this.isColliding(k)) {
-						this.game.audioPlayer.pickupKey();
-						this.inventory.push(k);
-						k.isPickedUp = true;
-					}
-				});
-			super.update(elapsedTime);
 		});
+
+		this.game.keys
+			.filter((k) => !k.isPickedUp)
+			.forEach((k) => {
+				if (this.isColliding(k)) {
+					this.game.audioPlayer.pickupKey();
+					this.inventory.push(k);
+					k.isPickedUp = true;
+				}
+			});
+
+		super.update(elapsedTime);
 	}
 }

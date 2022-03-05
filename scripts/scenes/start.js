@@ -27,7 +27,7 @@ export class StartScene extends GameObject {
 		super.render();
 		ctx.save();
 		ctx.fillStyle = this.textGradient;
-		ctx.font = "100px, zombiecontrol";
+		ctx.font = "100px zombiecontrol";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillText("Click to Start!!", canvas.width / 2, canvas.height / 2);
