@@ -8,7 +8,7 @@ export class GameObject {
 		this.height = h;
 		this.fillStyle = undefined;
 		this.lastLocation = new Location(this.x, this.y);
-		console.log(this);
+		//console.log(this);
 	}
 	update(elapsedTime) {
 		this.lastLocation.x = this.x;

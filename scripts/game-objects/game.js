@@ -1,6 +1,8 @@
+//@ts-check
+
 import { Key } from "./key.js";
 import { GameObject } from "./game-object.js";
-import { canvas } from "../canvas.js";
+import { canvas, ctx } from "../canvas.js";
 import { Barrier } from "./barrier.js";
 import { Monster } from "./monster.js";
 import { Player } from "./player.js";
@@ -10,7 +12,8 @@ import { StartScene } from "../scenes/start.js";
 import { GameOverScene } from "../scenes/game-over.js";
 import { GameWonScene } from "../scenes/game-won.js";
 import { AudioPlayer } from "../scenes/audio-player.js";
-import {level1}  from "levels"
+import { level1 } from "../levels.js";
+
 export class Game {
 	constructor() {
 		this.player = undefined;
@@ -23,7 +26,7 @@ export class Game {
 		this.isDead = false;
 		this.isLevelComplete = false;
 
-		this.levels = [level1, level2];
+		this.levels = [level1];
 		this.currentLevel = 0;
 
 		this.currentTime = 0;
@@ -38,6 +41,17 @@ export class Game {
 	reset() {
 		this.resetGame();
 		this.start();
+	}
+	resetGame() {
+		this.player = undefined;
+		this.barriers = [];
+		this.monsters = [];
+		this.keys = [];
+		this.exitPortal = undefined;
+		this.gameObjects = [];
+
+		this.isDead = false;
+		this.isLevelComplete = false;
 	}
 	start() {
 		this.audioPlayer.init();
@@ -56,22 +70,19 @@ export class Game {
 		this.reset();
 		this.audioPlayer.winGame();
 		let winGame = new GameWonScene(this);
-		this.gameObjects = [win];
+		this.gameObjects = [winGame];
 	}
 	nextLevel() {
 		this.resetGame();
-		this.currentLEvel++;
+		this.currentLevel++;
 		if (this.currentLevel < this.levels.length) {
 			this.audioPlayer.exit();
 			this.loadLevel();
 		} else {
-			this.gameOverWin();
+			this.winGame();
 		}
 	}
 
-	/**
-	 * @param {string []} level
-	 */
 	loadLevel() {
 		let level = this.levels[this.currentLevel];
 
@@ -135,8 +146,9 @@ function gameLoop(timestamp) {
 	if (game.isLevelComplete) {
 		game.nextLevel();
 	}
-	if (game.isPlayerDead) {
-		game.gameOverLose();
+
+	if (game.isDead) {
+		game.gameOver();
 	}
 
 	let elapsedTime = Math.floor(timestamp - game.currentTime);

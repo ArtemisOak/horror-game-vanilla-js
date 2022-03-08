@@ -21,7 +21,7 @@ export class GameOverScene extends GameObject {
 		canvas.addEventListener(
 			"click",
 			() => {
-				this.game.restart();
+				this.game.reset();
 			},
 			{ once: true }
 		);
@@ -32,15 +32,15 @@ export class GameOverScene extends GameObject {
 		ctx.fillStyle = this.textGradient;
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.font = "100px, zombiecontrol";
+		ctx.font = "100px zombiecontrol";
 		ctx.fillText("YOU DIED", canvas.width / 2, 100);
-		ctx.font = "70px, zombiecontrol";
+		ctx.font = "70px zombiecontrol";
 		ctx.fillText(
 			`You survived ${this.game.currentLevel} levels`,
 			canvas.width / 2,
 			canvas.height / 2
 		);
-		ctx.font = "75px, zombiecontrol";
+		ctx.font = "75px zombiecontrol";
 		ctx.fillText(
 			"Click to try again!",
 			canvas.width / 2,

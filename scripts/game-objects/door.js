@@ -15,7 +15,7 @@ export class Door extends GameObject {
 		let height = isVertical ? 48 : 16;
 		super(width, height, adjustedX, adjustedY);
 		this.isOpen = false;
-		this.isUnlocked = false;
+		this.isLocked = true;
 		this.fillStyle = "orange";
 	}
 	render() {
