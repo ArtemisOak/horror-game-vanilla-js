@@ -12,7 +12,7 @@ import { StartScene } from "../scenes/start.js";
 import { GameOverScene } from "../scenes/game-over.js";
 import { GameWonScene } from "../scenes/game-won.js";
 import { AudioPlayer } from "../scenes/audio-player.js";
-import { level1 } from "../levels.js";
+import { level1, level2, level3, level4 } from "../levels.js";
 
 export class Game {
 	constructor() {
@@ -26,7 +26,7 @@ export class Game {
 		this.isDead = false;
 		this.isLevelComplete = false;
 
-		this.levels = [level1];
+		this.levels = [level1, level2, level3, level4];
 		this.currentLevel = 0;
 
 		this.currentTime = 0;
